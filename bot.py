@@ -2,9 +2,10 @@ import discord
 from discord.ext import commands
 import random
 import asyncio
+import os
 
-TOKEN = "MTQ2NzkzMTc4MTM0NDAwMjEwOQ.GZSpeC.D1uv9MGpguAcN2OaAG5WbdUO12_91g-VjNbjUE"
-CHANNEL_ID = 1467932891962150982
+TOKEN = os.getenv("DISCORD_TOKEN")
+CHANNEL_ID = 123456789012345678
 
 intents = discord.Intents.default()
 intents.members = True
@@ -20,42 +21,38 @@ CORE_LINES = [
     "I LIVE WITH MY DAD",
     "I JUST WANNA HELP MY MOM",
     "THIS IS REAL LIFE",
-    "I'M NOT ROLEPLAYING",
-    "BRO I'M SERIOUS"
+    "IM NOT ROLEPLAYING",
+    "BRO IM SERIOUS"
 ]
 
 REJECTED_LINES = [
-    "OKAY MAYBE I SHOULDN'T HAVE SAID ANYTHING",
-    "YALL DON'T CARE ANYWAY",
-    "I'M ACTUALLY STUPID FOR SAYING THIS",
+    "OKAY MAYBE I SHOULDNT HAVE SAID ANYTHING",
+    "YALL DONT CARE ANYWAY",
+    "IM ACTUALLY STUPID FOR SAYING THIS",
     "WHY DO I EVEN TALK",
     "NEVER MIND BRO",
-    "I'M DONE TALKING"
+    "IM DONE TALKING"
 ]
 
 CHAOS_LINES = [
-    "WHY YALL LAUGHING???",
+    "WHY YALL LAUGHING",
     "STOP TYPING LMAO",
     "BROOOOO",
     "THIS CHAT IS EVIL",
     "NAH THIS CRAZY"
 ]
 
-EMOJIS = ["😭", "💀", "😔", "😡"]
+EMOJIS = ["😭", "💀", "🤡", "😔", "😡"]
 
 def build_message(name):
     lines = []
     lines.append(f"PLS @{name} I NEED THIS")
-
     for _ in range(random.randint(2, 4)):
         lines.append(random.choice(CORE_LINES))
-
-    # 40% 機率進入「被拒絕後」悲傷模式
     if random.random() < 0.4:
         lines.append(random.choice(REJECTED_LINES))
     else:
         lines.append(random.choice(CHAOS_LINES))
-
     lines.append(random.choice(EMOJIS) * random.randint(2, 5))
     return "\n".join(lines)
 
@@ -63,44 +60,41 @@ async def speed_loop():
     global running
     await bot.wait_until_ready()
     channel = bot.get_channel(CHANNEL_ID)
-
     if channel is None:
-        print("❌ 找不到頻道，請檢查 CHANNEL_ID")
         return
-
     while running:
         members = [
             m for m in channel.guild.members
             if not m.bot and m.status != discord.Status.offline
         ]
-
         if members:
             target = random.choice(members)
-            msg = build_message(target.display_name)
-            await channel.send(msg)
-
-        wait_minutes = random.randint(1, 4)
-        await asyncio.sleep(wait_minutes * 60)
+            await channel.send(build_message(target.display_name))
+        await asyncio.sleep(random.randint(1, 4) * 60)
 
 @bot.command()
 async def start(ctx):
     global running
     if running:
-        await ctx.send("⚠️ 已經在跑了 BRO")
+        await ctx.send("ALREADY RUNNING BRO")
         return
-
     running = True
     bot.loop.create_task(speed_loop())
-    await ctx.send("🔥 SPEED MODE 啟動")
+    await ctx.send("SPEED MODE ON")
 
 @bot.command()
 async def stop(ctx):
     global running
     running = False
-    await ctx.send("🛑 SPEED MODE 停止")
+    await ctx.send("SPEED MODE OFF")
+
+@bot.command()
+async def ping(ctx):
+    await ctx.send("IM ALIVE BRO")
 
 @bot.event
 async def on_ready():
-    print(f"✅ 已登入為 {bot.user}")
+    print(f"LOGIN OK {bot.user}")
 
 bot.run(TOKEN)
+
