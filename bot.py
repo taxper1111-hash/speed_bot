@@ -4,8 +4,8 @@ import random
 import asyncio
 import os
 
-TOKEN = os.getenv("DISCORD_TOKEN")
-CHANNEL_ID = 123456789012345678
+TOKEN = os.getenv("TOKEN")
+CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 
 intents = discord.Intents.default()
 intents.members = True
@@ -89,12 +89,14 @@ async def stop(ctx):
     await ctx.send("SPEED MODE OFF")
 
 @bot.command()
-async def ping(ctx):
-    await ctx.send("IM ALIVE BRO")
+async def alive(ctx):
+    await ctx.send("THIS IS SPEED BOT IM ALIVE")
 
 @bot.event
 async def on_ready():
     print(f"LOGIN OK {bot.user}")
 
 bot.run(TOKEN)
+
+
 
