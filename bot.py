@@ -15,12 +15,12 @@ CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 crazy_mode = True
 last_target_id = None
 
-normal_lines = [
+base_lines = [
     "MY MOM IS KINDA HOMELESS",
     "I LIVE WITH MY DAD",
-    "IM TRYING TO HELP MY MOM",
     "THIS IS REAL LIFE",
-    "BRO IM SERIOUS"
+    "BRO IM SERIOUS",
+    "IM JUST TRYING TO HELP MY MOM"
 ]
 
 crazy_lines = [
@@ -29,19 +29,17 @@ crazy_lines = [
     "IM NOT ROLEPLAYING",
     "NAH THIS CRAZY",
     "BRO PLEASE",
-    "THIS IS REAL LIFE",
+    "WHY NOBODY LISTENING",
     "IM SHAKING RN",
-    "WHY NOBODY HELPING",
-    "IM DEAD SERIOUS",
     "PLEASE BRO PLEASE"
 ]
 
 @client.event
 async def on_ready():
-    print("BOT READY")
-    client.loop.create_task(loop_task())
+    print("SPEED BOT READY")
+    client.loop.create_task(crazy_loop())
 
-async def loop_task():
+async def crazy_loop():
     await client.wait_until_ready()
     global last_target_id
     while not client.is_closed():
@@ -56,11 +54,12 @@ async def loop_task():
             continue
         target = random.choice(members)
         last_target_id = target.id
-        mention = target.mention
-        msg = f"PLS {mention} I NEED THIS\n"
-        msg += "I LIVE WITH MY DAD\n"
-        msg += "MY MOM IS KINDA HOMELESS\n"
-        msg += random.choice(normal_lines)
+        msg = (
+            f"PLS {target.mention} I NEED THIS\n"
+            f"I LIVE WITH MY DAD\n"
+            f"MY MOM IS KINDA HOMELESS\n"
+            f"{random.choice(base_lines)}"
+        )
         await channel.send(msg)
 
 @client.event
@@ -69,31 +68,32 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    if message.content.lower() == "!alive":
+    text = message.content.lower()
+
+    if text == "!alive":
         await message.channel.send("THIS IS SPEED BOT IM ALIVE")
         return
 
-    if message.content.lower() == "!crazy on":
+    if text == "!start":
         crazy_mode = True
-        await message.channel.send("CRAZY MODE ON 😭🔥")
+        await message.channel.send("SPEED MODE ON 🔥😭")
         return
 
-    if message.content.lower() == "!crazy off":
+    if text == "!stop":
         crazy_mode = False
-        await message.channel.send("CRAZY MODE OFF 😐")
+        await message.channel.send("SPEED MODE OFF 😐")
         return
 
     if last_target_id and message.author.id == last_target_id:
-        if message.content.lower() in ["no", "stop", "shut up", "wtf"]:
-            mention = message.author.mention
-            spam = f"PLS {mention} I NEED THIS\n"
-            spam += "THIS IS REAL LIFE\n"
-            spam += "MY MOM IS KINDA HOMELESS\n"
-            spam += "BRO IM SERIOUS\n"
-            spam += random.choice(crazy_lines)
-            await message.channel.send(spam)
+        if text in ["no", "stop", "shut up", "wtf"]:
+            msg = (
+                f"PLS {message.author.mention} I NEED THIS\n"
+                f"THIS IS REAL LIFE\n"
+                f"MY MOM IS KINDA HOMELESS\n"
+                f"BRO IM SERIOUS\n"
+                f"{random.choice(crazy_lines)}"
+            )
+            await message.channel.send(msg)
 
 client.run(TOKEN)
-
-
 
